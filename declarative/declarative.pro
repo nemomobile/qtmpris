@@ -15,7 +15,7 @@ EXAMPLE = ../example/declarative/*
 OTHER_FILES += $${EXAMPLE}
 
 TARGET = $${MPRISQTLIB}-qml-plugin
-PLUGIN_IMPORT_PATH = org/nemomobile/mpris
+PLUGIN_IMPORT_PATH = org/nemomobile/qtmpris
 
 QMAKE_SUBSTITUTES = qmldir.in
 

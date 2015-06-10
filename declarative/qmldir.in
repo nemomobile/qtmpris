@@ -1,2 +1,2 @@
-module org.nemomobile.mpris
+module org.nemomobile.qtmpris
 plugin $${TARGET}
