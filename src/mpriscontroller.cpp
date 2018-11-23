@@ -73,7 +73,7 @@ MprisController::MprisController(const QString &service, const QDBusConnection &
     connect(m_mprisPlayerInterface, &MprisPlayerInterface::rateChanged, this, &MprisController::rateChanged);
     connect(m_mprisPlayerInterface, &MprisPlayerInterface::shuffleChanged, this, &MprisController::shuffleChanged);
     connect(m_mprisPlayerInterface, &MprisPlayerInterface::volumeChanged, this, &MprisController::volumeChanged);
-    connect(m_mprisPlayerInterface, &MprisPlayerInterface::seeked, this, &MprisController::seeked);
+    connect(m_mprisPlayerInterface, &MprisPlayerInterface::Seeked, this, &MprisController::seeked);
     m_mprisPlayerInterface->setUseCache(true);
 
     // This will initialize the properties, if needed
