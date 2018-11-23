@@ -472,7 +472,11 @@ QVariantMap MprisPlayer::typeMetadata(const QVariantMap &aMetadata)
     while (i != aMetadata.constEnd()) {
         switch (Mpris::enumerationFromString<Mpris::Metadata>(i.key())) {
         case Mpris::TrackId:
-            metadata.insert(i.key(), QVariant::fromValue(QDBusObjectPath(i.value().toString())));
+            if (i.value().type() == QMetaType::QString) {
+                metadata.insert(i.key(), QVariant::fromValue(QDBusObjectPath(i.value().toString())));
+            } else {
+                metadata.insert(i.key(), QVariant::fromValue(i.value()));
+            }
             break;
         case Mpris::Length:
             metadata.insert(i.key(), QVariant::fromValue(i.value().toLongLong()));
