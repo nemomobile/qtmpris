@@ -25,7 +25,8 @@ SOURCES += \
     mpriscontroller.cpp \
     mprismanager.cpp \
     mprisplayerinterface.cpp \
-    mprisrootinterface.cpp
+    mprisrootinterface.cpp \
+    mprisbluezproxy.cpp
 
 HEADERS += \
     mprisqt.h \
@@ -34,7 +35,8 @@ HEADERS += \
     mprisplayer_p.h \
     mpriscontroller.h \
     mpriscontroller_p.h \
-    mprismanager.h
+    mprismanager.h \
+    mprisbluezproxy.h
 
 INSTALL_HEADERS = \
     MprisQt \
@@ -42,11 +44,13 @@ INSTALL_HEADERS = \
     MprisPlayer \
     MprisController \
     MprisManager \
+    MprisBluezProxy \
     mprisqt.h \
     mpris.h \
     mprisplayer.h \
     mpriscontroller.h \
-    mprismanager.h
+    mprismanager.h \
+    mprisbluezproxy.h
 
 OTHER_FILES += org.mpris.MediaPlayer2.xml \
     org.mpris.MediaPlayer2.Player.xml

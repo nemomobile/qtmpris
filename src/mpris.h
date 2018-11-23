@@ -101,6 +101,7 @@ private:
     friend class MprisPlayerAdaptor;
     friend class MprisPlayer;
     friend class MprisController;
+    friend class MprisBluezProxy;
 };
 
 #endif /* MPRIS_H */

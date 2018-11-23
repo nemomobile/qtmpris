@@ -60,11 +60,13 @@ rm -rf %{buildroot}
 %{_includedir}/qt5/MprisQt/MprisPlayer
 %{_includedir}/qt5/MprisQt/MprisController
 %{_includedir}/qt5/MprisQt/MprisManager
+%{_includedir}/qt5/MprisQt/MprisBluezProxy
 %{_includedir}/qt5/MprisQt/mprisqt.h
 %{_includedir}/qt5/MprisQt/mpris.h
 %{_includedir}/qt5/MprisQt/mprisplayer.h
 %{_includedir}/qt5/MprisQt/mpriscontroller.h
 %{_includedir}/qt5/MprisQt/mprismanager.h
+%{_includedir}/qt5/MprisQt/mprisbluezproxy.h
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/%{name}.pc
 
