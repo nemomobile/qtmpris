@@ -29,6 +29,7 @@
 #include <MprisQt>
 #include <Mpris>
 #include <MprisController>
+#include <MprisBluezProxy>
 
 #include <QDBusConnection>
 #include <QDBusObjectPath>
@@ -42,12 +43,16 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 
+class QQmlEngine;
+class QJSEngine;
 class QSignalMapper;
+class MprisBluezProxy;
 class MPRIS_QT_EXPORT MprisManager : public QObject
 {
     Q_OBJECT
 
     Q_PROPERTY(bool singleService READ singleService WRITE setSingleService NOTIFY singleServiceChanged)
+    Q_PROPERTY(bool mprisBluezProxyEnabled READ mprisBluezProxyEnabled WRITE setMprisBluezProxyEnabled NOTIFY mprisBluezProxyEnabledChanged)
     Q_PROPERTY(QString currentService READ currentService WRITE setCurrentService NOTIFY currentServiceChanged)
     Q_PROPERTY(QStringList availableServices READ availableServices NOTIFY availableServicesChanged)
 
@@ -104,6 +109,9 @@ public slots:
 
     bool singleService() const;
     void setSingleService(bool single);
+
+    bool mprisBluezProxyEnabled() const;
+    void setMprisBluezProxyEnabled(bool enabled);
 
     QString currentService() const;
     void setCurrentService(const QString &service);
@@ -170,6 +178,7 @@ signals:
     void singleServiceChanged();
     void currentServiceChanged();
     void availableServicesChanged();
+    void mprisBluezProxyEnabledChanged();
 
     // Mpris2 Root Interface
     void canQuitChanged();
@@ -212,10 +221,12 @@ private:
     bool checkController(const char *callerName) const;
 
     bool m_singleService;
+    bool m_mprisBluezProxyEnabled;
     QSharedPointer<MprisController> m_currentController;
     QList< QSharedPointer<MprisController> > m_availableControllers;
     QList< QSharedPointer<MprisController> > m_otherPlayingControllers;
     QSignalMapper *m_playbackStatusMapper;
+    QSharedPointer<MprisBluezProxy> m_mprisBluezProxy;
 };
 
 #endif /* MPRISMANAGER_H */

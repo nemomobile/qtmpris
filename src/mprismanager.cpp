@@ -26,13 +26,21 @@
 #include "mprismanager.h"
 
 #include "mpriscontroller.h"
+#include "mprisplayer.h"
+#include "mprisbluezproxy.h"
 
 #include <qqmlinfo.h>
 
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
+#include <QDBusMetaType>
+#include <QDBusMessage>
+#include <QDBusReply>
 
 #include <QtCore/QSignalMapper>
+
+#include <QQmlEngine>
+#include <QJSEngine>
 
 static const QString mprisNameSpace = QStringLiteral("org.mpris.MediaPlayer2.*");
 static const QString dBusService = QStringLiteral("org.freedesktop.DBus");
@@ -44,12 +52,13 @@ static const QString dBusNameOwnerChangedSignal = QStringLiteral("NameOwnerChang
 MprisManager::MprisManager(QObject *parent)
     : QObject(parent)
     , m_singleService(false)
+    , m_mprisBluezProxyEnabled(false)
     , m_playbackStatusMapper(new QSignalMapper(this))
 {
     QDBusConnection connection = QDBusConnection::sessionBus();
 
     if (!connection.isConnected()) {
-        qmlInfo(this) << "Failed attempting to connect to DBus";
+        qmlInfo(this) << "Failed attempting to connect to DBus session bus";
         return;
     }
 
@@ -152,6 +161,35 @@ void MprisManager::setSingleService(bool single)
 
     m_singleService = single;
     emit singleServiceChanged();
+}
+
+bool MprisManager::mprisBluezProxyEnabled() const
+{
+    return m_mprisBluezProxyEnabled;
+}
+
+void MprisManager::setMprisBluezProxyEnabled(bool enabled)
+{
+    if (m_mprisBluezProxyEnabled == enabled) {
+        return;
+    }
+
+    if (enabled) {
+        // Create MprisBluezProxy instance
+        qmlInfo(this) << "Enabling MprisBluezProxy";
+        if (m_mprisBluezProxy.isNull()) {
+            m_mprisBluezProxy = QSharedPointer<MprisBluezProxy>(new MprisBluezProxy(this));
+        }
+    } else {
+        // Delete MprisBluezProxy instance
+        qmlInfo(this) << "Disabling MprisBluezProxy";
+        if (!m_mprisBluezProxy.isNull()) {
+            m_mprisBluezProxy.clear();
+        }
+    }
+
+    m_mprisBluezProxyEnabled = enabled;
+    emit mprisBluezProxyEnabledChanged();
 }
 
 QString MprisManager::currentService() const
@@ -560,9 +598,9 @@ void MprisManager::setCurrentController(QSharedPointer<MprisController> controll
         connect(m_currentController.data(), &MprisController::identityChanged, this, &MprisManager::identityChanged);
         connect(m_currentController.data(), &MprisController::supportedUriSchemesChanged, this, &MprisManager::supportedUriSchemesChanged);
         connect(m_currentController.data(), &MprisController::supportedMimeTypesChanged, this, &MprisManager::supportedMimeTypesChanged);
-        connect(m_currentController.data(), &MprisController::canControlChanged, this, &MprisManager::canControlChanged);
 
         // Mpris Player Interface
+        connect(m_currentController.data(), &MprisController::canControlChanged, this, &MprisManager::canControlChanged);
         connect(m_currentController.data(), &MprisController::canGoNextChanged, this, &MprisManager::canGoNextChanged);
         connect(m_currentController.data(), &MprisController::canGoPreviousChanged, this, &MprisManager::canGoPreviousChanged);
         connect(m_currentController.data(), &MprisController::canPauseChanged, this, &MprisManager::canPauseChanged);
@@ -581,6 +619,10 @@ void MprisManager::setCurrentController(QSharedPointer<MprisController> controll
         if (m_currentController->playbackStatus() == Mpris::Playing) {
             m_otherPlayingControllers.removeOne(m_currentController);
         }
+    }
+
+    if (m_mprisBluezProxyEnabled && !m_mprisBluezProxy.isNull()) {
+        m_mprisBluezProxy->setCurrentController(m_currentController);
     }
 
     emit currentServiceChanged();
