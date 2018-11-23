@@ -545,6 +545,7 @@ void MprisPlayer::registerService()
 
     if (!connection.registerService(QString(serviceNamePrefix).append(m_serviceName))) {
         qmlInfo(this) << "Failed attempting to register service: " << m_serviceName << " Already taken?";
+        qmlInfo(this) << connection.lastError().message();
     }
 
     return;
