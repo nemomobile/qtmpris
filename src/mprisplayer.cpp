@@ -46,6 +46,7 @@ MprisPlayer::MprisPlayer(QObject *parent)
     , QDBusContext()
     , m_mprisRootAdaptor(new MprisRootAdaptor(this))
     , m_mprisPlayerAdaptor(new MprisPlayerAdaptor(this))
+    , m_dbusType(QDBusConnection::SessionBus)
     , m_canQuit(false)
     , m_canRaise(false)
     , m_canSetFullscreen(false)
@@ -66,7 +67,17 @@ MprisPlayer::MprisPlayer(QObject *parent)
     , m_shuffle(false)
     , m_volume(0)
 {
+    if (parent != NULL) {
+        if (parent->property("useSystemBus").isValid()) {
+            qmlInfo(this) << "MprisPlayer using system bus";
+            m_dbusType = QDBusConnection::SystemBus;
+        }
+    }
+
     QDBusConnection connection = QDBusConnection::sessionBus();
+    if (m_dbusType == QDBusConnection::SystemBus) {
+        connection = QDBusConnection::systemBus();
+    }
 
     if (!connection.isConnected()) {
         qmlInfo(this) << "Failed attempting to connect to DBus";
@@ -537,6 +548,9 @@ void MprisPlayer::registerService()
     }
 
     QDBusConnection connection = QDBusConnection::sessionBus();
+    if (m_dbusType == QDBusConnection::SystemBus) {
+        connection = QDBusConnection::systemBus();
+    }
 
     if (!connection.isConnected()) {
         qmlInfo(this) << "Failed attempting to connect to DBus";
@@ -555,17 +569,23 @@ void MprisPlayer::unregisterService()
 {
     if (!m_serviceName.isEmpty()) {
         QDBusConnection connection = QDBusConnection::sessionBus();
+        if (m_dbusType == QDBusConnection::SystemBus) {
+            connection = QDBusConnection::systemBus();
+        }
         connection.unregisterService(QString(serviceNamePrefix).append(m_serviceName));
     }
 }
 
 void MprisPlayer::notifyPropertiesChanged(const QString& interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties) const
 {
-    if (m_serviceName.isEmpty()) {
+    if (m_serviceName.isEmpty() && m_dbusType != QDBusConnection::SystemBus) {
         return;
     }
 
     QDBusConnection connection = QDBusConnection::sessionBus();
+    if (m_dbusType == QDBusConnection::SystemBus) {
+        connection = QDBusConnection::systemBus();
+    }
 
     if (!connection.isConnected()) {
         qmlInfo(this) << "Failed attempting to connect to DBus";

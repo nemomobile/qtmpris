@@ -32,6 +32,7 @@
 #include <QDBusContext>
 #include <QDBusPendingCallWatcher>
 #include <QDBusObjectPath>
+#include <QDBusConnection>
 
 
 class MprisRootAdaptor;
@@ -212,6 +213,7 @@ private:
     MprisRootAdaptor *m_mprisRootAdaptor;
     MprisPlayerAdaptor *m_mprisPlayerAdaptor;
 
+    int m_dbusType;
     QString m_serviceName;
 
     // Mpris2 Root Interface
